@@ -1,5 +1,5 @@
-# Genetic-Algorithm
->
+# Genetic Algorithm
+> Optimizing bit strings through genetics and natural selections
 
 ![](https://nnpdf.hepforge.org/images/GA.png)
 
@@ -18,13 +18,21 @@ Windows:
 ```sh
 Not yet available
 ```
-## Configuration
 
 ## Running
+
+The Genetric Algorithm accepts a number of arguments that must be supplied to it and are listed in the following order:
+
+| Argument |        Description        |
+|----------|---------------------------|
+| arg1     | Number of generations     |
+| arg2     | Population size           |
+| arg3     | Length of the bit string  |
 
 Linux & OS X:
 
 ```sh
+./runMe [arg1] [arg2] [arg3]
 ```
 
 ## Usage Example
