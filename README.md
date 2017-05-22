@@ -1,39 +1,36 @@
-/*
- * ------------------------------------------------------------------
- *  README.md
- *
- *  CIS*6420 - Soft Computing - W17
- *  School of Computer Science
- *  University of Guelph
- *  Author: Alexander Gontcharov
- * ------------------------------------------------------------------
- */
+# Genetic-Algorithm
+>
 
-A makefile has been provided with the source file to aid with the build and running.
+![](https://nnpdf.hepforge.org/images/GA.png)
 
------------------------
-How to Build and Clean
------------------------
-To build type in the following: 
-- make
+## Installation
 
-To clean the build type in the following: 
-- make clean
+Linux & OS X:
 
------------------------
-How to Run the Program:
------------------------
-To run the program type in the following on the command line: 
-- make run
+```sh
+git clone https://github.com/AGontcharov/Genetic-Algorithm.git
+cd Genetic-Algorithm/
+make
+```
 
-To run the program on its own the following arguments must be supplied:
-- ./runMe [Max generation number] [Population size] [bit string length]
+Windows:
 
-By default:
-- Maximun generation number is 1000
-- Size of the population is 50
-- Bit string length is 16 bits
+```sh
+Not yet available
+```
+## Configuration
 
-These values can be adjusted by changing the following values for the macros in the makefile:
-- GENNUM (Maximum generation number)
-- POPNUM (Size of the population)
+## Running
+
+Linux & OS X:
+
+```sh
+```
+
+## Usage Example
+
+## Meta
+
+Alexander Gontcharov – alexander.goncharov@gmail.com
+
+[https://github.com/AGontcharov/](https://github.com/AGontcharov/)
