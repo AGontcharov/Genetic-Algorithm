@@ -165,10 +165,9 @@ int selection(double * weightedFitness, int currentPopulation) {
     for (i = 0; i < currentPopulation; i++)
         if (selected < weightedFitness[i]) break;
 
-    /* Prevent the -1 index case. Not sure if I should regenerate the random number though. */
+    /* Prevent the -1 index case. */
     if ((i - 1) < 0) i = 1;
     
-    /*What does it select if the randon number is lower than everything?*/
     #if DEBUG
     printf("Selected: %lf at index %d\n", weightedFitness[i - 1], i - 1);
     #endif
@@ -193,8 +192,6 @@ void crossover(char * destination, char * a, char * b, int length) {
     printf("Performing cross over!\n");
     printf("Splitting at: %d\n", split);
     #endif 
-
-    // NEW CROSSOVER THAT MAKES SENSES
 
     for (i = 0; i < split; i++) {
         bit = !!((a[i/8] << i % 8) & 0x80);
@@ -233,10 +230,9 @@ void crossover(char * destination, char * a, char * b, int length) {
 void mutation(char * bitString, int length) {
     int position = 0;
     double chance = 0;
-    //int i = 0, j = 0;
 
     #if DEBUG
-    int i = 0;
+    int i = 0, j = 0;
     #endif
 
     // Roll the die for RNGESUS
@@ -258,32 +254,27 @@ void mutation(char * bitString, int length) {
 
         /* Before muration. */
         #if DEBUG
-        for (i = 0; i < 8; i++) {
-            printf("%d", !!((*bitString << i) & 0x80));
+        for (i = 0; i < (length + 7)/8; i++) {
+            for (j = 0; j < 8; j++)
+                printf("%d", !!((bitString[i] << j) & 0x80));
         }
         printf("\n");
         #endif
 
         /* Toggle bit at position */
-        bitString[position/8] ^= 1 << position % 8;
-
-        /* TEST*/
-        /*printf("After mutation:");
-        for (i = 0; i < (length + 7)/8; i++) {
-            for (j = 0; j < 8; j++) {
-                printf("%d", !!((bitString[i] << j) & 0x80));
-            }
-        }
-        printf("\n");*/
+        bitString[position/8] ^= 1 << position % 8; //Something here is wrong
 
         /* After mutation. */
         #if DEBUG
-        for (i = 0; i < 8; i++) {
-            printf("%d", !!((*bitString << i) & 0x80));
+        for (i = 0; i < (length + 7)/8; i++) {
+            for (j = 0; j < 8; j++)
+                printf("%d", !!((bitString[i] << j) & 0x80));
         }
         printf("\n");
         #endif
     }
+
+    exit(0);
 }
 
 void simulation(char ** parentBitString, int currentPopulation, int maxGenerationNum, int length) {
