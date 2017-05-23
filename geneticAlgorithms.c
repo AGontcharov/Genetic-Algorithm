@@ -235,18 +235,18 @@ void mutation(char * bitString, int length) {
     int i = 0, j = 0;
     #endif
 
-    // Roll the die for RNGESUS
+    /* Generate chance for mutation between 0 and 1. */
     chance = (double)rand()/(double)(RAND_MAX/1);
 
     #if DEBUG
     printf("Chance for mutation is: %lf\n", chance);
     #endif
 
-    /* Perform mutation. */
+    /* 1/bit string length chance to perform mutation. */
     if (chance < (double) 1/length) {
 
         /* Choose a random bit to flip. */
-        position = rand() % length - 1;
+        position = rand() % (length - 1);
 
         #if DEBUG
         printf("Mutating bit at position %d\n", position);
@@ -262,7 +262,7 @@ void mutation(char * bitString, int length) {
         #endif
 
         /* Toggle bit at position */
-        bitString[position/8] ^= 1 << position % 8; //Something here is wrong
+        bitString[position/8] ^= 1 << (7 - (position % 8));
 
         /* After mutation. */
         #if DEBUG
@@ -273,8 +273,6 @@ void mutation(char * bitString, int length) {
         printf("\n");
         #endif
     }
-
-    exit(0);
 }
 
 void simulation(char ** parentBitString, int currentPopulation, int maxGenerationNum, int length) {
@@ -369,15 +367,6 @@ void simulation(char ** parentBitString, int currentPopulation, int maxGeneratio
             /* Perform crossover and mutation. */
             crossover(childrenBitString[childrenPopulation], katniss, peeetah, length);
             mutation(childrenBitString[childrenPopulation], length);
-
-            /* Sanity check. */
-            /*#if DEBUG
-            for (i = 0; i < 8; i++) {
-                printf("%d", !!((childrenBitString[childrenPopulation] << i) & 0x80));
-            }
-            printf("\n");
-            #endif*/
-
             childrenPopulation++;
         }
 
