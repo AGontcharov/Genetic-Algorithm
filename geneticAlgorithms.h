@@ -4,7 +4,7 @@
 #include <time.h>
 #include <stdbool.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 /* Creates the bit strings for a generation based on the population size and initializes them with random values.
  * bitString: The generation bit strings 

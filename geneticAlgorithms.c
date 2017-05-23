@@ -194,30 +194,27 @@ void crossover(char * destination, char * a, char * b, int length) {
 	printf("Splitting at: %d\n", split);
 	#endif 
 
-	for (i = length - 1; i > split; i--) {
-		bit = ((a[i/8]) >> (i % 8) & 1);
+	// NEW CROSSOVER THAT MAKES SENSES
+
+	for (i = 0; i < split; i++) {
+		bit = !!((a[i/8] << i % 8) & 0x80);
+		newBitString[i/8] |= bit << (7 - (i % 8));
 
 		#if DEBUG
-		printf("a[%d] >> %d = %d\n", i/8, i % 8, bit);
+		printf("%d a[%d] << %d == %d\n", i, i/8, 7 - (i % 8), bit);
 		#endif
-
-		newBitString[i/8] |= bit << (i % 8);
 	}
-	printf("\n");
+	//printf("\n");
 
-	for (i = split; i >= 0; i--) {
-		bit = ((b[i/8]) >> (i % 8) & 1);
-		
+	for (i = split; i < length; i++) {
+		bit = !!((b[i/8] << i % 8) & 0x80);
+		newBitString[i/8] |= bit << (7 - (i % 8));
+
 		#if DEBUG
-		printf("b[%d] >> %d = %d\n", i/8, i % 8, bit);
+		printf("%d b[%d] << %d == %d\n", i, i/8, 7 - (i % 8), bit);
 		#endif
-
-		newBitString[i/8] |= bit << (i % 8);
 	}
-	printf("\n");
-
-	strncpy(destination, newBitString, (length + 7)/8);
-	free(newBitString);
+	//printf("\n");
 
 	/* After cross over. */
 	#if DEBUG
@@ -227,8 +224,10 @@ void crossover(char * destination, char * a, char * b, int length) {
   	}
 	printf("\n");
 	#endif
+	//printf("\n");
 
-	printf("\n");
+	strncpy(destination, newBitString, (length + 7)/8);
+	free(newBitString);
 }
 
 void mutation(char * bitString, int length) {
