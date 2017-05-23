@@ -1,7 +1,7 @@
 #Macros
 CC=gcc
 CFLAGS=-Wall -g -c
-GENNUM=1000
+GENNUM=100
 POPNUM=50
 LENGTH=16
 

@@ -5,8 +5,8 @@ int main(int argc, char * argv[]) {
     int generationPopulation = 0;           // Size of the population of the current generation
     char ** bitStrings = NULL;              // The default population
     int bitLength = 0;                      // Length of the bit string
+    int seed;                               // Seed of the random number generator
     int i = 0;
-    int seed;
 
     /* Command line argument defensive checking. */
     if (argc != 4 && argc != 5) {
@@ -47,7 +47,7 @@ int main(int argc, char * argv[]) {
         free(bitStrings[i]);
     }
     free(bitStrings);
-    
+
     return 0;
 }
 
@@ -83,7 +83,7 @@ int setBitsFitness(char * a, int length) {
     return totalSetBits;
 }
 
-void bubbleSort(char ** parentBitString, int * populationFitness, int currentPopulation) {
+void bubbleSort(char ** parentBitStrings, int * populationFitness, int currentPopulation) {
     int i = 0, j = 0, temp = 0;
     char * tempString = NULL;
     bool swaped = false;
@@ -104,9 +104,9 @@ void bubbleSort(char ** parentBitString, int * populationFitness, int currentPop
                 populationFitness[j] = populationFitness[j + 1];
                 populationFitness[j + 1] = temp;
 
-                tempString = parentBitString[j];
-                parentBitString[j] = parentBitString[j + 1];
-                parentBitString[j + 1] = tempString;
+                tempString = parentBitStrings[j];
+                parentBitStrings[j] = parentBitStrings[j + 1];
+                parentBitStrings[j + 1] = tempString;
                 swaped = true;
             }
         }
@@ -117,7 +117,7 @@ void bubbleSort(char ** parentBitString, int * populationFitness, int currentPop
     #if DEBUG
     for (i = 0; i < currentPopulation; i++) printf("%d ", populationFitness[i]);        
     printf("\n");
-    printBitString(parentBitString, currentPopulation, 16);
+    printBitString(parentBitStrings, currentPopulation, 16);
     #endif
 }
 
@@ -164,19 +164,17 @@ int selection(double * weightedFitness, int currentPopulation) {
     printf("Randon number is: %lf\n", selected);
     #endif
 
-    for (i = 0; i < currentPopulation; i++)
-        if (selected < weightedFitness[i]) break;
+    for (i = currentPopulation - 1; i >= 0; i--)
+        if (weightedFitness[i] < selected || i == 0) break;
 
-    /* Prevent the -1 index case. */
-    if ((i - 1) < 0) i = 1;
-    
     #if DEBUG
-    printf("Selected: %lf at index %d\n", weightedFitness[i - 1], i - 1);
+    printf("Selected: %lf at index %d\n", weightedFitness[i], i);
     #endif
 
-    return i - 1;
+    return i;
 }
 
+// Might have to produce 2 childrens instead of 1
 void crossover(char * destination, char * a, char * b, int length) {
     int split = 0;
     int i = 0;
@@ -277,7 +275,7 @@ void mutation(char * bitString, int length) {
     }
 }
 
-void simulation(char ** parentBitString, int currentPopulation, int maxGenerationNum, int length) {
+void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerationNum, int length) {
     int i = 0;
     int generationNum = 0;                  // The current generation
     int childrenPopulation = 0;             // Size of the children population
@@ -314,12 +312,12 @@ void simulation(char ** parentBitString, int currentPopulation, int maxGeneratio
 
         /* Calculate the fitness for each individual in the current generation. */
         for (i = 0; i < currentPopulation; i++) {
-            strncpy(temp, parentBitString[i], (length + 7)/8);
+            strncpy(temp, parentBitStrings[i], (length + 7)/8);
             populationFitness[i] = setBitsFitness(temp, length);
         }
 
-        /* Sort the parentBitString and the populationFitness. */
-        bubbleSort(parentBitString, populationFitness, currentPopulation);
+        /* Sort the parentBitStrings and the populationFitness. */
+        bubbleSort(parentBitStrings, populationFitness, currentPopulation);
 
         /* Highest fitness value seen so far. */
         if (seenFitness < populationFitness[currentPopulation - 1])
@@ -331,20 +329,22 @@ void simulation(char ** parentBitString, int currentPopulation, int maxGeneratio
         if (generationNum == 0) {
             printf("GENERATION %d: \n", generationNum);
             printf("Highest seen fitness is: %d\n", seenFitness);
-            printf("Number of bits set (1): %d\n\n", generationFitness);    
+            printf("Number of bits set (1): %d\n\n", generationFitness);
         }
-        
+
         #if DEBUG
-        printBitString(parentBitString, currentPopulation, length);
+        printBitString(parentBitStrings, currentPopulation, length);
+        pritnf("\n");
         #endif
 
         while (childrenPopulation < currentPopulation) {
 
             /* Perform selection .*/
-            strncpy(parentA, parentBitString[selection(weightedFitness, currentPopulation)], (length + 7)/8);
+            strncpy(parentA, parentBitStrings[selection(weightedFitness, currentPopulation)], (length + 7)/8);
 
             /* Print parentA */
             #if DEBUG
+            printf("Parent A: ");
             for (i = 0; i < (length + 7)/8; i++) {
                 for (j = 0; j < 8; j++) {
                     printf("%d", !!((parentA[i] << j) & 0x80));
@@ -353,10 +353,11 @@ void simulation(char ** parentBitString, int currentPopulation, int maxGeneratio
             printf("\n");
             #endif
 
-            strncpy(parentB, parentBitString[selection(weightedFitness, currentPopulation)], (length + 7)/8);
+            strncpy(parentB, parentBitStrings[selection(weightedFitness, currentPopulation)], (length + 7)/8);
 
             /* Print parentB. */
             #if DEBUG
+            printf("Parent B: ");
             for (i = 0; i < (length + 7)/8; i++) {
                 for (j = 0; j < 8; j++) {
                     printf("%d", !!((parentB[i] << j) & 0x80));
@@ -374,11 +375,12 @@ void simulation(char ** parentBitString, int currentPopulation, int maxGeneratio
         #if DEBUG
         printf("Done making children!\n");
         printBitString(childrenBitStrings, childrenPopulation, length);
+        printf("\n");
         #endif
 
         /* Children become the parents now for the next generation. */
         for (i = 0; i < childrenPopulation; i++)
-            strncpy(parentBitString[i], childrenBitStrings[i], (length +7)/8);
+            strncpy(parentBitStrings[i], childrenBitStrings[i], (length +7)/8);
         
         currentPopulation = childrenPopulation;
         childrenPopulation = 0;
@@ -386,9 +388,14 @@ void simulation(char ** parentBitString, int currentPopulation, int maxGeneratio
 
         #if DEBUG
         printf("Parents now are: \n");
-        printBitString(parentBitString, currentPopulation, length);
+        printBitString(parentBitStrings, currentPopulation, length);
         #endif
     }
+
+    /* Get the final generation fitness taking mutation into account. */
+    generationFitness = 0;
+    for (i = 0; i < currentPopulation; i++)
+        generationFitness += setBitsFitness(childrenBitStrings[i], length);
 
     printf("Solution found or maximum generation reached!\n");
     printf("GENERATION %d: \n", generationNum);
