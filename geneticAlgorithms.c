@@ -82,16 +82,13 @@ int setBitsFitness(char * a, int length) {
 }
 
 void bubbleSort(char ** parentBitString, int * populationFitness, int currentPopulation) {
-	int i = 0, j = 0;
-	int temp = 0;
+	int i = 0, j = 0, temp = 0;
 	char * tempString = NULL;
 	bool swaped = false;
 
 	/* Print the unsorted array. */
 	#if DEBUG
-	for (i = 0; i < currentPopulation; i++) {
-		printf("%d ", (populationFitness)[i]);
-	}
+	for (i = 0; i < currentPopulation; i++) printf("%d ", (populationFitness)[i]);
 	printf("\n");
 	#endif
 
@@ -99,17 +96,15 @@ void bubbleSort(char ** parentBitString, int * populationFitness, int currentPop
 	for (i = 0; i < currentPopulation - 1; i++) {
 		for (j = 0; j < currentPopulation - 1 - i; j++) {
 
-
+			/* Sort the population fitness and the bit strings. */
 			if (populationFitness[j] > populationFitness[j + 1]) {
 				temp = populationFitness[j];
 				populationFitness[j] = populationFitness[j + 1];
 				populationFitness[j + 1] = temp;
 
-				/* Sort the bit strings as well. */
 				tempString = parentBitString[j];
 				parentBitString[j] = parentBitString[j + 1];
 				parentBitString[j + 1] = tempString;
-
 				swaped = true;
 			}
 		}
@@ -118,9 +113,7 @@ void bubbleSort(char ** parentBitString, int * populationFitness, int currentPop
 
 	/* Print the sorted array. */
 	#if DEBUG
-	for (i = 0; i < currentPopulation; i++) {
-		printf("%d ", populationFitness[i]);		
-	}
+	for (i = 0; i < currentPopulation; i++) printf("%d ", populationFitness[i]);		
 	printf("\n");
 	printBitString(parentBitString, currentPopulation, 16);
 	#endif
@@ -134,30 +127,25 @@ int accumulatedFitness(double * weightedFitness, int * populationFitness, int cu
 		accumulatedFitness = 0;
 		
 		/* Get the accumulated fitness for an individual. */
-		for (j = i; j >= 0; j--) {
+		for (j = i; j >= 0; j--)
 			accumulatedFitness += populationFitness[j];
-		}
+
 		weightedFitness[i] = accumulatedFitness;
 	}
 
 	/* Print the accumulated fitness values. */
 	#if DEBUG
-	for (i = 0; i < currentPopulation; i++) {
-		printf("%d ", (int)weightedFitness[i]);
-	}
+	for (i = 0; i < currentPopulation; i++) printf("%d ", (int)weightedFitness[i]);
 	printf("\n");
 	#endif
 
 	/* Divide accumulate fitness by total fitness sum. */
-	for (i = 0; i < currentPopulation; i++) {
+	for (i = 0; i < currentPopulation; i++)
 		weightedFitness[i] = (weightedFitness[i] / weightedFitness[currentPopulation - 1]);
-	}
 
 	/* Print the standardized accumulated fitness values. */
 	#if DEBUG
-	for (i = 0; i < currentPopulation; i++) {
-		printf("%lf ", weightedFitness[i]);
-	}
+	for (i = 0; i < currentPopulation; i++) printf("%lf ", weightedFitness[i]);
 	printf("\n");
 	#endif
 
@@ -198,9 +186,7 @@ void crossover(char * destination, char * a, char * b, int length) {
 	int j = 0;
 	#endif
 
-	newBitString = malloc(sizeof(char) * (length + 7)/8);
-	memset(newBitString, 0, (length + 7)/8);
-
+	newBitString = calloc((length + 7)/8, sizeof(char));
 	split = (rand() % (length - 1)) + 1;
 
 	#if DEBUG
@@ -217,7 +203,7 @@ void crossover(char * destination, char * a, char * b, int length) {
 
 		newBitString[i/8] |= bit << (i % 8);
 	}
-	//printf("\n");
+	printf("\n");
 
 	for (i = split; i >= 0; i--) {
 		bit = ((b[i/8]) >> (i % 8) & 1);
@@ -228,7 +214,7 @@ void crossover(char * destination, char * a, char * b, int length) {
 
 		newBitString[i/8] |= bit << (i % 8);
 	}
-	//printf("\n");
+	printf("\n");
 
 	strncpy(destination, newBitString, (length + 7)/8);
 	free(newBitString);
@@ -236,14 +222,13 @@ void crossover(char * destination, char * a, char * b, int length) {
 	/* After cross over. */
 	#if DEBUG
 	for (i = 0; i < (length + 7)/8; i++) {
-		for (j = 0; j < 8; j++) {
+		for (j = 0; j < 8; j++)
       		printf("%d", !!((newBitString[i] << j) & 0x80));
-		}
   	}
 	printf("\n");
 	#endif
 
-	//printf("\n");
+	printf("\n");
 }
 
 void mutation(char * bitString, int length) {
@@ -320,33 +305,22 @@ void simulation(char ** parentBitString, int currentPopulation, int maxGeneratio
 	int j = 0;
 	#endif
 
-	/* Create arrays to store fitness values and bit strings. */
-	populationFitness = malloc(sizeof(int) * currentPopulation);
-	weightedFitness = malloc(sizeof(double) * currentPopulation);
-	katniss = malloc(sizeof(char) * length);
-	peeetah = malloc(sizeof(char) * length);
-	temp = malloc(sizeof(char) * length);
-	//temp = calloc(length, sizeof(char));
+	/* Create an initialize arrays and strings. */
+	populationFitness = calloc(currentPopulation, sizeof(int));
+	weightedFitness = calloc(currentPopulation, sizeof(double));
+	katniss = calloc(length, sizeof(char));
+	peeetah = calloc(length, sizeof(char));
+	temp = calloc(length, sizeof(char));
 
 	childrenBitString = malloc(sizeof(char *) * currentPopulation);
-
-	for (i = 0; i < currentPopulation; i++) {
-		childrenBitString[i] = malloc(sizeof(char) * (length + 7)/8);
-	}
+	for (i = 0; i < currentPopulation; i++)
+		childrenBitString[i] = calloc((length + 7)/8, sizeof(char));
 
 	/* Terminate once generation number has reahed maximum or solution has been found. */
 	while (generationNum < maxGenerationNum && seenFitness != maxFitness) {
-
-		/* Initialize arrays. */
-		memset(populationFitness, 0, currentPopulation);
-		memset(weightedFitness, 0, currentPopulation);
 	
 		for (i = 0; i < currentPopulation; i++)
 			memset(childrenBitString[i], 0, (length + 7)/8);
-
-		memset(katniss, 0, (length + 7)/8);
-		memset(peeetah, 0, (length + 7)/8);
-		memset(temp, 0, (length + 7)/8);
 
 		/* Calculate the fitness for each individual in the current generation. */
 		for (i = 0; i < currentPopulation; i++) {
@@ -384,7 +358,7 @@ void simulation(char ** parentBitString, int currentPopulation, int maxGeneratio
 			#if DEBUG
 			for (i = 0; i < (length + 7)/8; i++) {
 				for (j = 0; j < 8; j++) {
-		      		printf("%d", !!((katniss[i] << j) & 0x80)); //understand what this does	
+		      		printf("%d", !!((katniss[i] << j) & 0x80));
 				}
 		  	}
 	 		printf("\n");
@@ -396,7 +370,7 @@ void simulation(char ** parentBitString, int currentPopulation, int maxGeneratio
 		  	#if DEBUG
 		  	for (i = 0; i < (length + 7)/8; i++) {
 				for (j = 0; j < 8; j++) {
-		      		printf("%d", !!((peeetah[i] << j) & 0x80)); //understand what this does	
+		      		printf("%d", !!((peeetah[i] << j) & 0x80));
 				}
 		  	}
 	 		printf("\n");
@@ -409,7 +383,7 @@ void simulation(char ** parentBitString, int currentPopulation, int maxGeneratio
 			/* Sanity check. */
 			/*#if DEBUG
 			for (i = 0; i < 8; i++) {
-			    printf("%d", !!((childrenBitString[childrenPopulation] << i) & 0x80)); //understand what this does
+			    printf("%d", !!((childrenBitString[childrenPopulation] << i) & 0x80));
 			}
 			printf("\n");
 			#endif*/
@@ -423,10 +397,8 @@ void simulation(char ** parentBitString, int currentPopulation, int maxGeneratio
 		#endif
 
 		/* Children become the parents now for the next generation. */
-
-		for (i = 0; i < childrenPopulation; i++) {
+		for (i = 0; i < childrenPopulation; i++)
 			strncpy(parentBitString[i], childrenBitString[i], (length +7)/8);
-		}
 		
 		currentPopulation = childrenPopulation;
 		childrenPopulation = 0;
