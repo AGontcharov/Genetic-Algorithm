@@ -12,15 +12,10 @@
  * Return: The generation bit string */
 void initPopulation(char ** bitString, int generationPopulation, int length);
 
-/* Calculates the fitness value for a given bit string based on the number of set bits.
+/* Calculates the fitness value for a given bit string based on the number of set bits. Implemented using  Brian Kernighan’s Algorithm.
  * a: A bit string
  * Return: The fitness value of the bit string. */
 int setBitsFitness(char * a, int length);
-
-/* Calcualte the fitness value for a given bit string based on the maximum integer value.
- * a: A bit string
- * Return:  */
-int integerValueFitness(char * a, int length);
 
 /* Sorts the generation bit strings and its fitness value in ascending order through the bubble sort algorithm.
  * bitString: The generation bit strings 

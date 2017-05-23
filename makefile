@@ -1,7 +1,7 @@
 #Macros
 CC=gcc
 CFLAGS=-Wall -g -c
-GENNUM=1000
+GENNUM=500
 POPNUM=50
 LENGTH=16
 
@@ -31,4 +31,4 @@ valgrind: runMe
 	valgrind --leak-check=full --show-reachable=yes --track-origins=yes -v ./runMe $(GENNUM) $(POPNUM) $(LENGTH)
 
 clean: 
-	rm runMe geneticAlgorithms.o resultsLength.txt resultsGen.txt resultsPop.txt
+	rm runMe *.o
