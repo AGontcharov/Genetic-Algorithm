@@ -32,7 +32,7 @@ The Genetric Algorithm accepts a number of arguments that must be supplied to it
 | arg3             | Bit string length             |
 | arg4 (optional)  | Randon number generator seed  |
 
-Alternatively, arg1, arg2 and arg3 can be changed in side the Makefile. By default these values have the following:
+Alternatively, arg1, arg2 and arg3 can be changed inside the Makefile. By default these values have the following:
 
 * Number of Generations = 1000
 * Population Size = 100
