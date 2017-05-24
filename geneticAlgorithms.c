@@ -5,7 +5,7 @@ int main(int argc, char * argv[]) {
     int generationPopulation = 0;           // Size of the population of the current generation
     char ** bitStrings = NULL;              // The default population
     int bitLength = 0;                      // Length of the bit string
-    int seed;                               // Seed of the random number generator
+    int seed = 0;                           // Seed of the random number generator
     int i = 0;
 
     /* Command line argument defensive checking. */
@@ -34,7 +34,7 @@ int main(int argc, char * argv[]) {
 
     #if DEBUG
     printf("Initial population is: \n");
-    printBitString(bitStrings, generationPopulation, bitLength);
+    printBitStrings(bitStrings, generationPopulation, bitLength);
     #endif
     
     printf("\nStarting generation!\n");
@@ -117,7 +117,7 @@ void bubbleSort(char ** parentBitStrings, int * populationFitness, int currentPo
     #if DEBUG
     for (i = 0; i < currentPopulation; i++) printf("%d ", populationFitness[i]);        
     printf("\n");
-    printBitString(parentBitStrings, currentPopulation, 16);
+    printBitStrings(parentBitStrings, currentPopulation, 16);
     #endif
 }
 
@@ -174,18 +174,17 @@ int selection(double * weightedFitness, int currentPopulation) {
     return i;
 }
 
-// Might have to produce 2 childrens instead of 1
-void crossover(char * destination, char * a, char * b, int length) {
-    int split = 0;
-    int i = 0;
-    int bit = 0;
-    char * newBitString = NULL;
+int crossover(char ** childrenBitStrings, int index, int maxPopulation, char * a, char * b, int length) {
+    int split = 0, bit = 0, added = 0, i = 0;
+    char * offspringC = NULL;                   // Child one from crossover
+    char * offspringD = NULL;                   // Child two from crossover
 
     #if DEBUG
     int j = 0;
     #endif
 
-    newBitString = calloc((length + 7)/8, sizeof(char));
+    offspringC = calloc((length + 7)/8, sizeof(char));
+    offspringD = calloc((length + 7)/8, sizeof(char));
     split = (rand() % (length - 1)) + 1;
 
     #if DEBUG
@@ -194,37 +193,64 @@ void crossover(char * destination, char * a, char * b, int length) {
     #endif 
 
     for (i = 0; i < split; i++) {
-        bit = !!((a[i/8] << i % 8) & 0x80);
-        newBitString[i/8] |= bit << (7 - (i % 8));
 
-        #if DEBUG
-        printf("%d a[%d] << %d == %d\n", i, i/8, 7 - (i % 8), bit);
-        #endif
+        /* Child C .*/
+        bit = !!((a[i/8] << i % 8) & 0x80);
+        offspringC[i/8] |= bit << (7 - (i % 8));
+        //printf("%d a[%d] << %d == %d\n", i, i/8, 7 - (i % 8), bit);
+
+        /* Child D .*/
+        bit = !!((b[i/8] << i % 8) & 0x80);
+        offspringD[i/8] |= bit << (7 - (i % 8));
+        //printf("%d b[%d] << %d == %d\n", i, i/8, 7 - (i % 8), bit);
     }
     //printf("\n");
 
     for (i = split; i < length; i++) {
-        bit = !!((b[i/8] << i % 8) & 0x80);
-        newBitString[i/8] |= bit << (7 - (i % 8));
 
-        #if DEBUG
-        printf("%d b[%d] << %d == %d\n", i, i/8, 7 - (i % 8), bit);
-        #endif
+        /* Child C. */
+        bit = !!((b[i/8] << i % 8) & 0x80);
+        offspringC[i/8] |= bit << (7 - (i % 8));
+        //printf("%d b[%d] << %d == %d\n", i, i/8, 7 - (i % 8), bit);
+
+        /* Child D. */
+        bit = !!((a[i/8] << i % 8) & 0x80);
+        offspringD[i/8] |= bit << (7 - (i % 8));
+        //printf("%d a[%d] << %d == %d\n", i, i/8, 7 - (i % 8), bit);
     }
     //printf("\n");
 
-    /* After cross over. */
+    /* After cross over print C. */
     #if DEBUG
     for (i = 0; i < (length + 7)/8; i++) {
         for (j = 0; j < 8; j++)
-            printf("%d", !!((newBitString[i] << j) & 0x80));
+            printf("%d", !!((offspringC[i] << j) & 0x80));
     }
     printf("\n");
     #endif
-    //printf("\n");
 
-    strncpy(destination, newBitString, (length + 7)/8);
-    free(newBitString);
+    /* After cross over print D. */
+    #if DEBUG
+    for (i = 0; i < (length + 7)/8; i++) {
+        for (j = 0; j < 8; j++)
+            printf("%d", !!((offspringD[i] << j) & 0x80));
+    }
+    printf("\n\n");
+    #endif
+
+    strncpy(childrenBitStrings[index], offspringC, (length + 7)/8);
+    added++;
+
+    /* Don't add extra child on odd population size. */
+    if (index + 1 != maxPopulation) {
+        strncpy(childrenBitStrings[index + 1], offspringD, (length + 7)/8);
+        added++;
+    }
+
+    free(offspringC);
+    free(offspringD);
+
+    return added;
 }
 
 void mutation(char * bitString, int length) {
@@ -252,7 +278,7 @@ void mutation(char * bitString, int length) {
         printf("Mutating bit at position %d\n", position);
         #endif
 
-        /* Before muration. */
+        /* Before mutation. */
         #if DEBUG
         for (i = 0; i < (length + 7)/8; i++) {
             for (j = 0; j < 8; j++)
@@ -327,14 +353,14 @@ void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerati
         generationFitness = accumulatedFitness(weightedFitness, populationFitness, currentPopulation);
         
         if (generationNum == 0) {
-            printf("GENERATION %d: \n", generationNum);
+            printf("STARTING GENERATION\n");
             printf("Highest seen fitness is: %d\n", seenFitness);
             printf("Number of bits set (1): %d\n\n", generationFitness);
         }
 
         #if DEBUG
-        printBitString(parentBitStrings, currentPopulation, length);
-        pritnf("\n");
+        printBitStrings(parentBitStrings, currentPopulation, length);
+        printf("\n");
         #endif
 
         while (childrenPopulation < currentPopulation) {
@@ -346,9 +372,8 @@ void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerati
             #if DEBUG
             printf("Parent A: ");
             for (i = 0; i < (length + 7)/8; i++) {
-                for (j = 0; j < 8; j++) {
+                for (j = 0; j < 8; j++)
                     printf("%d", !!((parentA[i] << j) & 0x80));
-                }
             }
             printf("\n");
             #endif
@@ -359,36 +384,36 @@ void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerati
             #if DEBUG
             printf("Parent B: ");
             for (i = 0; i < (length + 7)/8; i++) {
-                for (j = 0; j < 8; j++) {
+                for (j = 0; j < 8; j++)
                     printf("%d", !!((parentB[i] << j) & 0x80));
-                }
             }
             printf("\n");
             #endif
 
             /* Perform crossover and mutation. */
-            crossover(childrenBitStrings[childrenPopulation], parentA, parentB, length);
-            mutation(childrenBitStrings[childrenPopulation], length);
-            childrenPopulation++;
+            childrenPopulation += crossover(childrenBitStrings, childrenPopulation, currentPopulation, parentA, parentB, length);
         }
 
         #if DEBUG
         printf("Done making children!\n");
-        printBitString(childrenBitStrings, childrenPopulation, length);
+        printBitStrings(childrenBitStrings, childrenPopulation, length);
         printf("\n");
         #endif
+
+        /* Apply mutation to children. */
+        for (i = 0; i < childrenPopulation; i++)
+            mutation(childrenBitStrings[i], length);
 
         /* Children become the parents now for the next generation. */
         for (i = 0; i < childrenPopulation; i++)
             strncpy(parentBitStrings[i], childrenBitStrings[i], (length +7)/8);
         
-        currentPopulation = childrenPopulation;
         childrenPopulation = 0;
         generationNum++;
 
         #if DEBUG
         printf("Parents now are: \n");
-        printBitString(parentBitStrings, currentPopulation, length);
+        printBitStrings(parentBitStrings, currentPopulation, length);
         #endif
     }
 
@@ -400,7 +425,7 @@ void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerati
     printf("Solution found or maximum generation reached!\n");
     printf("GENERATION %d: \n", generationNum);
     printf("Highest seen fitness is: %d\n", seenFitness);
-    printf("Number of bits set (1): %d\n\n", generationFitness);
+    printf("Number of bits set (1): %d\n", generationFitness);
 
     /* Free all the allocated memory. */
     for (i = 0; i < currentPopulation; i++)
@@ -414,7 +439,7 @@ void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerati
     free(temp);
 }
 
-void printBitString(char ** bitstring, int generationPopulation, int length) {
+void printBitStrings(char ** bitStrings, int generationPopulation, int length) {
     int i = 0, j = 0, k = 0;
     
     /* Go through each string in the array. */
@@ -425,7 +450,7 @@ void printBitString(char ** bitstring, int generationPopulation, int length) {
 
             /* Left shit by K, mask it to 0x80 (1000 0000) and print 1 or 0 through !!. */
             for (k = 0; k < 8; k++)
-                printf("%d", !!((bitstring[i][j] << k) & 0x80)); 
+                printf("%d", !!((bitStrings[i][j] << k) & 0x80)); 
         }
         printf("\n");
     } 
