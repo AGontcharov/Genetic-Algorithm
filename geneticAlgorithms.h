@@ -6,6 +6,12 @@
 
 #define DEBUG 0
 
+#if DEBUG
+#define DEBUG_PRINT(...) fprintf(stderr, __VA_ARGS__)
+#else
+#define DEBUG_PRINT(...) do {} while(0)
+#endif
+
 /* Creates the bit strings for a generation based on the population size and initializes them with random values.
  * bitStrings: The starting generation bit strings 
  * generationPopulation: The population size of the generation

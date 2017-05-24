@@ -159,18 +159,12 @@ int selection(double * weightedFitness, int currentPopulation) {
     double selected = 0;
 
     selected = (double)rand()/(double)(RAND_MAX/1);
-
-    #if DEBUG
-    printf("Randon number is: %lf\n", selected);
-    #endif
+    DEBUG_PRINT("Randon number is: %lf\n", selected);
 
     for (i = currentPopulation - 1; i >= 0; i--)
         if (weightedFitness[i] < selected || i == 0) break;
 
-    #if DEBUG
-    printf("Selected: %lf at index %d\n", weightedFitness[i], i);
-    #endif
-
+    DEBUG_PRINT("Selected: %lf at index %d\n", weightedFitness[i], i);
     return i;
 }
 
@@ -187,10 +181,8 @@ int crossover(char ** childrenBitStrings, int index, int maxPopulation, char * a
     offspringD = calloc((length + 7)/8, sizeof(char));
     split = (rand() % (length - 1)) + 1;
 
-    #if DEBUG
-    printf("Performing cross over!\n");
-    printf("Splitting at: %d\n", split);
-    #endif 
+    DEBUG_PRINT("Performing cross over!\n");
+    DEBUG_PRINT("Splitting at: %d\n", split); 
 
     for (i = 0; i < split; i++) {
 
@@ -263,20 +255,14 @@ void mutation(char * bitString, int length) {
 
     /* Generate chance for mutation between 0 and 1. */
     chance = (double)rand()/(double)(RAND_MAX/1);
-
-    #if DEBUG
-    printf("Chance for mutation is: %lf\n", chance);
-    #endif
+    DEBUG_PRINT("Chance for mutation is: %lf\n", chance);
 
     /* (1/bit string length) probability to perform mutation. */
     if (chance < (double) 1/length) {
 
         /* Choose a random bit to flip. */
         position = rand() % (length - 1);
-
-        #if DEBUG
-        printf("Mutating bit at position %d\n", position);
-        #endif
+        DEBUG_PRINT("Mutating bit at position %d\n", position);        
 
         /* Before mutation. */
         #if DEBUG
