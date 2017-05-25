@@ -21,9 +21,9 @@ int main(int argc, char * argv[]) {
 
     /* Get the seed if given. */
     if (argc == 5) sscanf(argv[4], "%d", &seed);
+    else seed = time(NULL);
 
     /* Initialize the random number generator */ 
-    seed = time(NULL);
     srand(seed);
 
     /* Create and and populate all the bit strings with random values. */

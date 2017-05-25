@@ -18,13 +18,13 @@ else
 endif
 
 run: runMe
-	./runMe $(GENNUM) $(POPNUM) $(LENGTH)
+	./runMe $(GENNUM) $(POPNUM) $(LENGTH) $(SEED)
 
 debug: runMe
-	./runMe $(GENNUM) $(POPNUM) $(LENGTH)
+	./runMe $(GENNUM) $(POPNUM) $(LENGTH) $(SEED)
 
 valgrind: runMe
-	valgrind --leak-check=full --show-reachable=yes --track-origins=yes -v ./runMe $(GENNUM) $(POPNUM) $(LENGTH)
+	valgrind --leak-check=full --show-reachable=yes --track-origins=yes -v ./runMe $(GENNUM) $(POPNUM) $(LENGTH) $(SEED)
 
 clean: 
 	rm -rf runMe *.o
