@@ -259,8 +259,8 @@ void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerati
     int generationFitness = 0;              // The fitness of the generation
     int * populationFitness = NULL;         // The fitness values of the bit strings
     double * weightedFitness = NULL;        // The weighted roulette of the bit strings fitness
-    char * parentA = NULL;
-    char * parentB = NULL;
+    char * parentA = NULL;                  // First selected parent
+    char * parentB = NULL;                  // Second selected parent
     char * temp = NULL;                     // Temporary string to hold contents of parent bit strings.
     char ** childrenBitStrings = NULL;      // The children generation bit strings
 
@@ -377,7 +377,7 @@ void printPopulation(char ** bitStrings, int populationSize, int length) {
     printf("\n");
 }
 
-void printBitString(char * bitStrings, int length) {
+void printBitString(char * bitString, int length) {
     int i = 0, j = 0;
     
     /* Go through each character in the string.*/
@@ -385,7 +385,7 @@ void printBitString(char * bitStrings, int length) {
 
         /* Left shit by j, mask it to 0x80 (1000 0000) and print 1 or 0 through !!. */
         for (j = 0; j < 8; j++)
-            printf("%d", !!((bitStrings[i] << j) & 0x80)); 
+            printf("%d", !!((bitString[i] << j) & 0x80)); 
     }
     printf("\n"); 
 }

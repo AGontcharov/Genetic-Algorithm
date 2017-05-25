@@ -4,9 +4,7 @@
 #include <time.h>
 #include <stdbool.h>
 
-#define DEBUG 0
-
-#if DEBUG
+#ifdef DEBUG
 #define DEBUG_PRINT(...) fprintf(stderr, __VA_ARGS__)
 #define DEBUG_FUNCTION(function, ...) (function)(__VA_ARGS__)
 #else
@@ -16,10 +14,10 @@
 
 /* Creates the bit strings for a generation based on the population size and initializes them with random values.
  * bitStrings: The starting generation bit strings 
- * generationPopulation: The population size of the generation
+ * populationSize: Size of the population
  * length: Length of the bit strings
  * Return: N/a */
-void initPopulation(char ** bitStrings, int generationPopulation, int length);
+void initPopulation(char ** bitStrings, int populationSize, int length);
 
 /* Calculates the fitness value for a given bit string based on the number of set bits. Implemented using  Brian Kernighan’s Algorithm.
  * a: A bit string
@@ -41,7 +39,7 @@ void bubbleSort(char ** parentBitStrings, int * populationFitness, int currentPo
  * Return: The maximum fitness accumulated */
 int accumulatedFitness(double * weightedFitness, int * populationFitness, int currentPopulation);
 
-/* Selects an individual based on theit fitness level through the weighted roulette selection method.
+/* Selects an individual based on their fitness level through the weighted roulette selection method.
  * weightedFitness: The fitness of each individual in the generation 
  * currentPopulation: The population size of the current generation
  * Return: The index of the individual selected */
@@ -72,15 +70,14 @@ void mutation(char * bitString, int length);
 void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerationNum, int length);
 
 /* Prints all the bit strings for a given population.
- * bitString: The generation bit strings 
- * generationPopulation: The population size of the generation
+ * bitString: The bit strings of the population 
+ * populationSize: Size of the population
  * length: The length of the bit strings
  * Return: N/a */
-void printPopulation(char ** bitStrings, int generationPopulation, int length);
+void printPopulation(char ** bitStrings, int populationSize, int length);
 
 /* Prints all the bit strings for a given population.
  * bitString: The generation bit strings 
- * generationPopulation: The population size of the generation
  * length: The length of the bit strings
  * Return: N/a */
-void printBitString(char * bitStrings, int length);
+void printBitString(char * bitString, int length);

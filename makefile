@@ -1,9 +1,10 @@
 #Macros
 CC=gcc
 CFLAGS=-Wall -g -c
-GENNUM=5
-POPNUM=5
+GENNUM=100
+POPNUM=100
 LENGTH=16
+SEED=
 
 all: runMe
 
@@ -13,22 +14,22 @@ runMe: geneticAlgorithms.o
 geneticAlgorithms.o: geneticAlgorithms.c geneticAlgorithms.h
 	$(CC) $(CFLAGS) geneticAlgorithms.c
 
+
+
+# debugMe: debugMe.o
+# 	$(CC) debugMe.o -o debugMe
+
+# debugMe.o: geneticAlgorithms.c geneticAlgorithms.h
+# 	$(CC) $(CFLAGS) -DDEBUG geneticAlgorithms.c -o debugMe.o
+
 run: runMe
 	./runMe $(GENNUM) $(POPNUM) $(LENGTH)
 
-test: test.sh runMe
-	./test.sh
-
-#Need -DDEBUG=1
-
-#debug: debugMe
-#	./debugMe $(GENNUM) $(POPNUM)
-
-#debugMe: geneticAlgorithms.o
-#	$(CC) geneticAlgorithms.o -o debugMe
+debug: debugMe
+	./debugMe $(GENNUM) $(POPNUM) $(LENGTH)
 
 valgrind: runMe
 	valgrind --leak-check=full --show-reachable=yes --track-origins=yes -v ./runMe $(GENNUM) $(POPNUM) $(LENGTH)
 
 clean: 
-	rm runMe *.o
+	rm -rf runMe debugMe *.o
