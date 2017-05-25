@@ -35,7 +35,7 @@ int main(int argc, char * argv[]) {
     DEBUG_PRINT("Initial population is: \n");
     DEBUG_FUNCTION(printPopulation, bitStrings, populationSize, bitLength);
 
-    printf("Starting generation!\n");
+    printf("\nStarting generation!\n");
     printf("Seed: %u\n", (unsigned)seed);
 
     /* Begin the battle royal. */
@@ -174,40 +174,35 @@ int crossover(char ** childrenBitStrings, int index, int maxPopulation, char * a
     offspringC = calloc((length + 7)/8, sizeof(char));
     offspringD = calloc((length + 7)/8, sizeof(char));
     split = (rand() % (length - 1)) + 1;
+    DEBUG_PRINT("Performing crossover at point %d\n", split);
 
-    DEBUG_PRINT("Performing cross over!\n");
-    DEBUG_PRINT("Splitting at: %d\n", split); 
-
+    /* Insert the head of the new bit strings. */
     for (i = 0; i < split; i++) {
 
         /* Child C .*/
         bit = !!((a[i/8] << i % 8) & 0x80);
         offspringC[i/8] |= bit << (7 - (i % 8));
-        //printf("%d a[%d] << %d == %d\n", i, i/8, 7 - (i % 8), bit);
 
         /* Child D .*/
         bit = !!((b[i/8] << i % 8) & 0x80);
         offspringD[i/8] |= bit << (7 - (i % 8));
-        //printf("%d b[%d] << %d == %d\n", i, i/8, 7 - (i % 8), bit);
     }
-    //printf("\n");
 
+    /* Insert the tail of the new bit strings. */
     for (i = split; i < length; i++) {
 
         /* Child C. */
         bit = !!((b[i/8] << i % 8) & 0x80);
         offspringC[i/8] |= bit << (7 - (i % 8));
-        //printf("%d b[%d] << %d == %d\n", i, i/8, 7 - (i % 8), bit);
 
         /* Child D. */
         bit = !!((a[i/8] << i % 8) & 0x80);
         offspringD[i/8] |= bit << (7 - (i % 8));
-        //printf("%d a[%d] << %d == %d\n", i, i/8, 7 - (i % 8), bit);
     }
-    //printf("\n");
 
     DEBUG_FUNCTION(printBitString, offspringC, length);
     DEBUG_FUNCTION(printBitString, offspringD, length);
+    DEBUG_PRINT("\n");
 
     strncpy(childrenBitStrings[index], offspringC, (length + 7)/8);
     added++;
@@ -298,7 +293,7 @@ void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerati
         generationFitness = accumulatedFitness(weightedFitness, populationFitness, currentPopulation);
         
         if (generationNum == 0) {
-            printf("STARTING GENERATION\n");
+            printf("GENERATION %d: \n", generationNum);
             printf("Highest seen fitness is: %d\n", seenFitness);
             printf("Number of bits set (1): %d\n\n", generationFitness);
         }
