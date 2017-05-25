@@ -32,19 +32,26 @@ The Genetric Algorithm accepts a number of arguments that must be supplied to it
 | arg3             | Bit string length             |
 | arg4 (optional)  | Randon number generator seed  |
 
-Alternatively, arg1, arg2 and arg3 can be changed inside the Makefile. By default these values have the following:
+Alternatively, arg1, arg2 and arg3 can be changed inside the Makefile whereas arg4 can be defined  during rule runtime. By default these values have the following:
 
 * Number of Generations = 1000
 * Population Size = 100
 * Bit string length = 16
+* Seed = undefined
 
 Linux & OS X:
 
 ```sh
-To run via Makefile:
+#Run via Makefile:
 make run
 
-Otherwise, to run it separately:
+#Run with seed:
+make run SEED=1738
+
+#Run in debug mode:
+make debug
+
+#Run seperately:
 ./runMe [arg1] [arg2] [arg3] [seed]
 ```
 
