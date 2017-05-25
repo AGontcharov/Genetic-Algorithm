@@ -70,14 +70,14 @@ void mutation(char * bitString, int length);
 void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerationNum, int length);
 
 /* Prints all the bit strings for a given population.
- * bitString: The bit strings of the population 
+ * bitString: The bit strings of a population 
  * populationSize: Size of the population
  * length: The length of the bit strings
  * Return: N/a */
 void printPopulation(char ** bitStrings, int populationSize, int length);
 
-/* Prints all the bit strings for a given population.
- * bitString: The generation bit strings 
+/* Prints a bit string.
+ * bitString: Bit string of size 8. 
  * length: The length of the bit strings
  * Return: N/a */
 void printBitString(char * bitString, int length);

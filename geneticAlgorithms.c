@@ -355,20 +355,10 @@ void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerati
 }
 
 void printPopulation(char ** bitStrings, int populationSize, int length) {
-    int i = 0, j = 0, k = 0;
+    int i = 0 ;
     
     /* Go through each string in the array. */
-    for (i = 0; i < populationSize; i++) {
-
-        /* Go through each character in the string.*/
-        for (j = 0; j < (length + 7)/8; j++) {
-
-            /* Left shit by K, mask it to 0x80 (1000 0000) and print 1 or 0 through !!. */
-            for (k = 0; k < 8; k++)
-                printf("%d", !!((bitStrings[i][j] << k) & 0x80)); 
-        }
-        printf("\n");
-    }
+    for (i = 0; i < populationSize; i++) printBitString(bitStrings[i], length);
     printf("\n");
 }
 
