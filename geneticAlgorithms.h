@@ -8,8 +8,10 @@
 
 #if DEBUG
 #define DEBUG_PRINT(...) fprintf(stderr, __VA_ARGS__)
+#define DEBUG_FUNCTION(function, ...) (function)(__VA_ARGS__)
 #else
 #define DEBUG_PRINT(...) do {} while(0)
+#define DEBUG_FUNCTION(function, ...) do {} while(0)
 #endif
 
 /* Creates the bit strings for a generation based on the population size and initializes them with random values.
@@ -55,6 +57,12 @@ int selection(double * weightedFitness, int currentPopulation);
  * Return: The Amount of children added to the children generation */
 int crossover(char ** childrenBitStrings, int index, int maxPopulation, char * a, char * b, int length);
 
+/* Very low chance (1/length) to perform mutation on a bit string.
+ * bitString: The bit string to randomly toggle a bit.
+ * length: The length of the bit strings
+ * Return: N/a */
+void mutation(char * bitString, int length);
+
 /* Start the genetic algorithm simulation and search fot the solution or until terminating generation has been reached.
  * parentBitStrings: The generation bit strings 
  * populationfFitness: The fitness of each individual in the generation
@@ -63,15 +71,16 @@ int crossover(char ** childrenBitStrings, int index, int maxPopulation, char * a
  * Return: N/a */
 void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerationNum, int length);
 
-/* Prints all the bit strings for a given generation and its population size.
+/* Prints all the bit strings for a given population.
  * bitString: The generation bit strings 
  * generationPopulation: The population size of the generation
  * length: The length of the bit strings
  * Return: N/a */
-void printBitStrings(char ** bitStrings, int generationPopulation, int length);
+void printPopulation(char ** bitStrings, int generationPopulation, int length);
 
-/* Very low chance (1/length) to perform mutation on a bit string.
- * bitString: The bit string to randomly toggle a bit.
+/* Prints all the bit strings for a given population.
+ * bitString: The generation bit strings 
+ * generationPopulation: The population size of the generation
  * length: The length of the bit strings
  * Return: N/a */
-void mutation(char * bitString, int length);
+void printBitString(char * bitStrings, int length);
