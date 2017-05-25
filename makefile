@@ -1,8 +1,8 @@
 #Macros
 CC=gcc
 CFLAGS=-Wall -g -c
-GENNUM=100
-POPNUM=20
+GENNUM=5
+POPNUM=5
 LENGTH=16
 
 all: runMe

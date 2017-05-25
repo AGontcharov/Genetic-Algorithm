@@ -32,16 +32,11 @@ int main(int argc, char * argv[]) {
         bitStrings[i] = calloc((bitLength + 7)/8, sizeof(char));   
     initPopulation(bitStrings, populationSize, bitLength);
 
-    //#if DEBUG
     DEBUG_PRINT("Initial population is: \n");
     DEBUG_FUNCTION(printPopulation, bitStrings, populationSize, bitLength);
-    //printPopulation(bitStrings, populationSize, bitLength);
-    //#endif
 
     printf("Starting generation!\n");
     printf("Seed: %u\n", (unsigned)seed);
-
-    exit(-1);
 
     /* Begin the battle royal. */
     simulation(bitStrings, populationSize, maxGenerationNum, bitLength);
@@ -211,15 +206,8 @@ int crossover(char ** childrenBitStrings, int index, int maxPopulation, char * a
     }
     //printf("\n");
 
-    /* After cross over print C. */
-    #if DEBUG
-    printBitString(offspringC, length);
-    #endif
-
-    /* After cross over print D. */
-    #if DEBUG
-    printBitString(offspringD, length);
-    #endif
+    DEBUG_FUNCTION(printBitString, offspringC, length);
+    DEBUG_FUNCTION(printBitString, offspringD, length);
 
     strncpy(childrenBitStrings[index], offspringC, (length + 7)/8);
     added++;
@@ -252,17 +240,13 @@ void mutation(char * bitString, int length) {
         DEBUG_PRINT("Mutating bit at position %d\n", position);        
 
         /* Before mutation. */
-        #if DEBUG
-        printBitString(bitString, length);
-        #endif
+        DEBUG_FUNCTION(printBitString, bitString, length);
 
         /* Toggle bit at position */
         bitString[position/8] ^= 1 << (7 - (position % 8));
 
         /* After mutation. */
-        #if DEBUG
-        printBitString(bitString, length);
-        #endif
+        DEBUG_FUNCTION(printBitString, bitString, length);
     }
 }
 
@@ -318,40 +302,25 @@ void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerati
             printf("Highest seen fitness is: %d\n", seenFitness);
             printf("Number of bits set (1): %d\n\n", generationFitness);
         }
-
-        #if DEBUG
-        printPopulation(parentBitStrings, currentPopulation, length);
-        printf("\n");
-        #endif
+        DEBUG_FUNCTION(printPopulation, parentBitStrings, currentPopulation, length);
 
         while (childrenPopulation < currentPopulation) {
 
-            /* Perform selection .*/
+            /* Select first parent .*/
             strncpy(parentA, parentBitStrings[selection(weightedFitness, currentPopulation)], (length + 7)/8);
+            DEBUG_PRINT("Parent A: ");
+            DEBUG_FUNCTION(printBitString, parentA, length);
 
-            /* Print parentA */
-            #if DEBUG
-            printf("Parent A: ");
-            printBitString(parentA, length);
-            #endif
-
+            /* Select second parent. */
             strncpy(parentB, parentBitStrings[selection(weightedFitness, currentPopulation)], (length + 7)/8);
+            DEBUG_PRINT("Parent B: ");
+            DEBUG_FUNCTION(printBitString, parentB, length);
 
-            /* Print parentB. */
-            #if DEBUG
-            printf("Parent B: ");
-            printBitString(parentB, length);
-            #endif
-
-            /* Perform crossover and mutation. */
+            /* Perform single point crossover. */
             childrenPopulation += crossover(childrenBitStrings, childrenPopulation, currentPopulation, parentA, parentB, length);
         }
-
-        #if DEBUG
-        printf("Done making children!\n");
-        printPopulation(childrenBitStrings, childrenPopulation, length);
-        printf("\n");
-        #endif
+        DEBUG_PRINT("Done making children!\n");
+        DEBUG_FUNCTION(printPopulation, childrenBitStrings, childrenPopulation, length);
 
         /* Apply mutation to children. */
         for (i = 0; i < childrenPopulation; i++)
@@ -364,10 +333,8 @@ void simulation(char ** parentBitStrings, int currentPopulation, int maxGenerati
         childrenPopulation = 0;
         generationNum++;
 
-        #if DEBUG
-        printf("Parents now are: \n");
-        printPopulation(parentBitStrings, currentPopulation, length);
-        #endif
+        DEBUG_PRINT("Parents are now: \n");
+        DEBUG_FUNCTION(printPopulation, parentBitStrings, currentPopulation, length);
     }
 
     /* Get the final generation fitness taking mutation into account. */
